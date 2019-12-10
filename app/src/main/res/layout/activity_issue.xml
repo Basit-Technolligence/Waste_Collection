@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp"
+    tools:context=".IssueActivity">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trip Issues and Adjustment"
+        android:textSize="32sp"
+        android:textColor="@color/Green"
+
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="60dp">
+
+        <Button
+            android:id="@+id/issue1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I was an accident"
+            android:background="@drawable/button_round"
+            android:textSize="16sp"
+            android:textColor="@color/White">
+        </Button>
+
+        <Button
+            android:id="@+id/issu2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I found an item"
+            android:background="@drawable/button_round"
+            android:textSize="16sp"
+            android:textColor="@color/White"
+            android:layout_marginTop="30dp">
+        </Button>
+
+        <Button
+            android:id="@+id/issue3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Issue with truck"
+            android:background="@drawable/button_round"
+            android:textSize="16sp"
+            android:textColor="@color/White"
+            android:layout_marginTop="30dp">
+        </Button>
+
+        <Button
+            android:id="@+id/issue4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Issue with application"
+            android:background="@drawable/button_round"
+            android:textSize="16sp"
+            android:textColor="@color/White"
+            android:layout_marginTop="30dp">
+        </Button>
+
+        <Button
+            android:id="@+id/issue5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Issue trip request"
+            android:background="@drawable/button_round"
+            android:textSize="16sp"
+            android:textColor="@color/White"
+            android:layout_marginTop="30dp">
+        </Button>
+
+    </LinearLayout>
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

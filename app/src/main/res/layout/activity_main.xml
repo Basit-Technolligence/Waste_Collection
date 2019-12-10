@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Smart Waste Collector"
+        android:textColor="@color/Green"
+        android:textSize="30sp"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="70dp"
+        android:src="@drawable/truck2" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="100dp">
+
+        <Button
+            android:id="@+id/btnlogin1"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/Green"
+            android:text="login"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/btnreg1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            android:text="Register"
+            android:textColor="#4CAF50"
+            android:textSize="16sp"
+            tools:ignore="ButtonStyle" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
