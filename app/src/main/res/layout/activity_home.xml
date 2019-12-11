@@ -4,39 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/drawerlayout"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:id="@+id/drawarLayout"
+    tools:context=".HomeActivity">
 
-    <LinearLayout
+
+
+
+
+    <fragment
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimaryDark"
-            android:elevation="5dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-        <include layout="@layout/activity_map"/>
-
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:id="@+id/fragmentMap"
+        android:name="com.google.android.gms.maps.SupportMapFragment">
 
 
+
+
+    </fragment>
 
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        app:headerLayout="@layout/header"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/nav_view"
+        app:menu="@menu/drawar_menu"
+        app:itemTextColor="#6c6c6c"
         android:layout_gravity="start"
-        app:headerLayout="@layout/header"
-        app:menu="@menu/drawer_menu"/>
-
-
+        ></com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
