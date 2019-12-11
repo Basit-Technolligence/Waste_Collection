@@ -87,7 +87,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onLocationChanged(Location location) {
                 googleMap.clear();
 
-
+//no
                 //Toast.makeText(HomeActivity.this, "location:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
                 //showing on map
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
