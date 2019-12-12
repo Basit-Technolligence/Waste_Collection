@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp"
+    android:elevation="20dp"
+    android:background="#fff"
+    android:padding="20dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dustbinName"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:text="Empty Dust Bin 1">
+
+    </TextView>
+    <TextView
+        android:layout_below="@+id/dustbinName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/location"
+        android:text="Located at: Sadar">
+    </TextView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content"
+        android:id="@+id/date"
+        android:text="23-12-2019">
+    </TextView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/date"
+        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content"
+        android:text="23:12:02"
+        android:id="@+id/time">
+    </TextView>
+
+</RelativeLayout>

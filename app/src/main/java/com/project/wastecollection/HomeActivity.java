@@ -38,42 +38,27 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
     private static final int REQUEST_LOCATION = 0;
     LocationManager locationManager;
     LocationListener locationListener;
-    DrawerLayout drawerLayout;
-    ImageView imageView;
-    ActionBarDrawerToggle drawerToggle;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawarLayout);
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        //adding drawar button
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        //navbar item click
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        //header click navbar
-        View headerview = navigationView.getHeaderView(0);
-        imageView = (ImageView) headerview.findViewById(R.id.profile_image);
 
         //opening map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragmentMap);
         supportMapFragment.getMapAsync(HomeActivity.this);
 
+    }
+
+    @Override
+    protected int getContentViewId() {
+        return R.layout.activity_home;
     }
 
 
@@ -92,18 +77,18 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //showing on map
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 googleMap.addMarker(new MarkerOptions().position(latLng).title("Your location"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,18),4000,null);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18), 4000, null);
 
             }
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-              //  Toast.makeText(HomeActivity.this, "status change", Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(HomeActivity.this, "status change", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-             //   Toast.makeText(HomeActivity.this, "Permission", Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(HomeActivity.this, "Permission", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -121,8 +106,6 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
 
 
-
-
     }
 
     @Override
@@ -131,41 +114,5 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-
-    //drawer open close click
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-//            case R.id.nav_home: {
-//                Snackbar.make(drawerLayout, "Home", Snackbar.LENGTH_LONG).show();
-//                break;
-//            }
-//            case R.id.nav_profile: {
-//                Snackbar.make(drawerLayout, "Profile", Snackbar.LENGTH_LONG).show();
-//                break;
-//            }
-//            case R.id.nav_trip: {
-//                Snackbar.make(drawerLayout, "Trip", Snackbar.LENGTH_LONG).show();
-//                break;
-//
-//            }
-//            case R.id.nav_logout: {
-//                Snackbar.make(drawerLayout, "Logout", Snackbar.LENGTH_LONG).show();
-//                break;
-//
-//            }
-        }
-        return false;
-    }
 
 }
