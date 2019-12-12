@@ -1,13 +1,16 @@
 package com.project.wastecollection;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -18,6 +21,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +41,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.DecimalFormat;
 
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_LOCATION = 0;
@@ -45,7 +58,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     DrawerLayout drawerLayout;
     ImageView imageView;
     ActionBarDrawerToggle drawerToggle;
-
+    DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+    Double distance1 = 1000000000000000.0;
+    String driverId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,26 +99,127 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(final Location location) {
                 googleMap.clear();
 
 //no
                 //Toast.makeText(HomeActivity.this, "location:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
                 //showing on map
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
+                String uid = curentUser.getUid();
+                reference.child("Active").child(uid).child("id").setValue(uid);
+                reference.child("Active").child(uid).child("longitude").setValue(location.getLongitude());
+                reference.child("Active").child(uid).child("latitude").setValue(location.getLatitude());
+
                 googleMap.addMarker(new MarkerOptions().position(latLng).title("Your location"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,18),4000,null);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18), 4000, null);
+
+
+                reference.child("Dustbin").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot dustbin : dataSnapshot.getChildren()) {
+                                if (dataSnapshot.exists()) {
+                                    if (dustbin.child("status").getValue().equals("full")) {
+                                        final String lonDust = dustbin.child("longitude").getValue().toString();
+                                        final String latDust = dustbin.child("latitude").getValue().toString();
+                                        final String idDust = dustbin.child("id").getValue().toString();
+//                                        googleMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latDust), Double.parseDouble(lonDust))).title("Dustbin"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
+
+                                        reference.child("Active").addValueEventListener(new ValueEventListener() {
+                                            @RequiresApi(api = Build.VERSION_CODES.M)
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.exists()) {
+                                                    for (DataSnapshot user : dataSnapshot.getChildren()) {
+                                                        if (dataSnapshot.exists()) {
+                                                            String lon = user.child("longitude").getValue().toString();
+                                                            String lat = user.child("latitude").getValue().toString();
+                                                            String id = user.child("id").getValue().toString();
+
+                                                            int Radius = 6371;// radius of earth in Km
+                                                            double latitude = Double.parseDouble(lonDust);
+                                                            double longitude = Double.parseDouble(latDust);
+                                                            double lat2 = Double.parseDouble(lat);
+                                                            double lon2 = Double.parseDouble(lon);
+                                                            // googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lon2)).title("Destination"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
+
+                                                            double dLat = Math.toRadians(lat2 - latitude);
+                                                            double dLon = Math.toRadians(lon2 - longitude);
+                                                            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                                                                    + Math.cos(Math.toRadians(latitude))
+                                                                    * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                                                                    * Math.sin(dLon / 2);
+                                                            double c = 2 * Math.asin(Math.sqrt(a));
+                                                            double valueResult = Radius * c;
+                                                            double km = valueResult / 1;
+                                                            DecimalFormat newFormat = new DecimalFormat("####");
+                                                            int kmInDec = Integer.valueOf(newFormat.format(km));
+                                                            double meter = valueResult % 1000;
+                                                            int meterInDec = Integer.valueOf(newFormat.format(meter));
+                                                            Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                                                                    + " Meter   " + meterInDec);
+
+                                                            if (distance1 >= km) {
+                                                                distance1 = km;
+                                                                driverId = id;
+
+                                                            }
+                                                            //Toast.makeText(getApplicationContext(), String.valueOf(valueResult), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    }
+                                                }
+                                                FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                                String uid = curentUser.getUid();
+                                                if (uid == driverId) {
+//                                                Toast.makeText(getApplicationContext(), driverId, Toast.LENGTH_LONG).show();
+                                                reference.child("Dustbin").child(idDust).child("status").setValue("pending");
+
+                                                Intent i = new Intent(HomeActivity.this, DustBinLocation.class);
+                                                i.putExtra("Id", idDust);
+                                                i.putExtra("longitude", lonDust);
+                                                i.putExtra("latitude", latDust);
+
+                                                startActivity(i);
+                                                finish();
+                                                locationManager.removeUpdates(locationListener);
+
+                                                }
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError
+                                                                            databaseError) {
+
+                                            }
+                                        });
+
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
             }
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-              //  Toast.makeText(HomeActivity.this, "status change", Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(HomeActivity.this, "status change", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-             //   Toast.makeText(HomeActivity.this, "Permission", Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(HomeActivity.this, "Permission", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -112,7 +228,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(i);
 
             }
-        };
+        }
+
+        ;
         if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(HomeActivity.this, new String[]
                     {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
@@ -121,12 +239,11 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
 
 
-
-
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
 
 
     }
@@ -140,7 +257,6 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
     @Override
