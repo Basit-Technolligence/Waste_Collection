@@ -37,7 +37,7 @@
         </Button>
 
         <Button
-            android:id="@+id/issu2"
+            android:id="@+id/issue2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="I found an item"

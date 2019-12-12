@@ -24,7 +24,7 @@
         android:id="@+id/reguname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
+        android:inputType="textPersonName"
         android:hint="Username"
         android:textColorHint="@color/Green"
         android:textSize="18sp"
