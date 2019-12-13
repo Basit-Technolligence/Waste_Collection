@@ -21,7 +21,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseActivity {
 
     TextView eName,eMobile,eAddress,eAge,vechileNo;
     Button pupdate , pback;
@@ -38,10 +38,10 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
-
+      //  setContentView(R.layout.activity_profile);
+//
         getSupportActionBar().setTitle("Profile");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         eImage=(ImageView)findViewById(R.id.txtImg);
         eName=(TextView) findViewById(R.id.txtName);
@@ -95,5 +95,10 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity( i );
             }
         });
+    }
+
+    @Override
+    protected int getContentViewId() {
+        return R.layout.activity_profile;
     }
 }

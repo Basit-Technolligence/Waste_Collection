@@ -13,7 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class IssueActivity extends AppCompatActivity {
+public class IssueActivity extends BaseActivity {
     Button accident,itemFound,vechicleProblem,tripIssue,appIsuue;
     String i1,i2,i3,i4,i5;
     DatabaseReference dref= FirebaseDatabase.getInstance().getReference();
@@ -21,10 +21,10 @@ public class IssueActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_issue);
+//        setContentView(R.layout.activity_issue);
 
         getSupportActionBar().setTitle("Report Issues");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         accident = (Button)findViewById( R.id.issue1 );
         itemFound = (Button)findViewById( R.id.issue2 );
@@ -55,6 +55,17 @@ public class IssueActivity extends AppCompatActivity {
 
 
 
+
+    }
+
+    @Override
+    protected int getContentViewId() {
+        return R.layout.activity_issue;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
     }
 }
