@@ -60,7 +60,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     ActionBarDrawerToggle drawerToggle;
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
     Double distance1 = 1000000000000000.0;
-    String driverId;
+    String driverId, lonDust, latDust, idDust, lon, lat, id;
+    Integer x = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,16 +92,26 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        recreate();
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
         locationListener = new LocationListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onLocationChanged(final Location location) {
                 googleMap.clear();
+
 
 //no
                 //Toast.makeText(HomeActivity.this, "location:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
@@ -115,100 +126,110 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 googleMap.addMarker(new MarkerOptions().position(latLng).title("Your location"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18), 4000, null);
 
-
-                reference.child("Dustbin").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot dustbin : dataSnapshot.getChildren()) {
-                                if (dataSnapshot.exists()) {
-                                    if (dustbin.child("status").getValue().equals("full")) {
-                                        final String lonDust = dustbin.child("longitude").getValue().toString();
-                                        final String latDust = dustbin.child("latitude").getValue().toString();
-                                        final String idDust = dustbin.child("id").getValue().toString();
+                if (latLng != null) {
+                    reference.child("Dast").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                for (DataSnapshot dustbin : dataSnapshot.getChildren()) {
+                                    if (dataSnapshot.exists()) {
+                                        if (dustbin.child("status").getValue().equals("full")) {
+                                            lonDust = dustbin.child("longitude").getValue().toString();
+                                            latDust = dustbin.child("latitude").getValue().toString();
+                                            idDust = dustbin.child("id").getValue().toString();
 //                                        googleMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latDust), Double.parseDouble(lonDust))).title("Dustbin"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
 
-                                        reference.child("Active").addValueEventListener(new ValueEventListener() {
-                                            @RequiresApi(api = Build.VERSION_CODES.M)
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.exists()) {
-                                                    for (DataSnapshot user : dataSnapshot.getChildren()) {
-                                                        if (dataSnapshot.exists()) {
-                                                            String lon = user.child("longitude").getValue().toString();
-                                                            String lat = user.child("latitude").getValue().toString();
-                                                            String id = user.child("id").getValue().toString();
+                                            reference.child("Active").addValueEventListener(new ValueEventListener() {
+                                                @RequiresApi(api = Build.VERSION_CODES.M)
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()) {
+                                                        for (DataSnapshot user : dataSnapshot.getChildren()) {
+                                                            if (x == 0) {
+                                                                if (user.child("longitude").getValue().toString() != null) {
+                                                                    lon = user.child("longitude").getValue().toString();
 
-                                                            int Radius = 6371;// radius of earth in Km
-                                                            double latitude = Double.parseDouble(lonDust);
-                                                            double longitude = Double.parseDouble(latDust);
-                                                            double lat2 = Double.parseDouble(lat);
-                                                            double lon2 = Double.parseDouble(lon);
-                                                            // googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lon2)).title("Destination"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
+                                                                    lat = user.child("latitude").getValue().toString();
+                                                                    id = user.child("id").getValue().toString();
 
-                                                            double dLat = Math.toRadians(lat2 - latitude);
-                                                            double dLon = Math.toRadians(lon2 - longitude);
-                                                            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                                                                    + Math.cos(Math.toRadians(latitude))
-                                                                    * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                                                                    * Math.sin(dLon / 2);
-                                                            double c = 2 * Math.asin(Math.sqrt(a));
-                                                            double valueResult = Radius * c;
-                                                            double km = valueResult / 1;
-                                                            DecimalFormat newFormat = new DecimalFormat("####");
-                                                            int kmInDec = Integer.valueOf(newFormat.format(km));
-                                                            double meter = valueResult % 1000;
-                                                            int meterInDec = Integer.valueOf(newFormat.format(meter));
-                                                            Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
-                                                                    + " Meter   " + meterInDec);
+                                                                    int Radius = 6371;// radius of earth in Km
+                                                                    double latitude = Double.parseDouble(lonDust);
+                                                                    double longitude = Double.parseDouble(latDust);
+                                                                    double lat2 = Double.parseDouble(lat);
+                                                                    double lon2 = Double.parseDouble(lon);
+                                                                    // googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lon2)).title("Destination"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
 
-                                                            if (distance1 >= km) {
-                                                                distance1 = km;
-                                                                driverId = id;
+                                                                    double dLat = Math.toRadians(lat2 - latitude);
+                                                                    double dLon = Math.toRadians(lon2 - longitude);
+                                                                    double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                                                                            + Math.cos(Math.toRadians(latitude))
+                                                                            * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                                                                            * Math.sin(dLon / 2);
+                                                                    double c = 2 * Math.asin(Math.sqrt(a));
+                                                                    double valueResult = Radius * c;
+                                                                    double km = valueResult / 1;
+                                                                    DecimalFormat newFormat = new DecimalFormat("####");
+                                                                    int kmInDec = Integer.valueOf(newFormat.format(km));
+                                                                    double meter = valueResult % 1000;
+                                                                    int meterInDec = Integer.valueOf(newFormat.format(meter));
+                                                                    Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                                                                            + " Meter   " + meterInDec);
 
+                                                                    if (distance1 >= km) {
+                                                                        distance1 = km;
+                                                                        driverId = id;
+
+                                                                    }
+                                                                    //Toast.makeText(getApplicationContext(), String.valueOf(valueResult), Toast.LENGTH_LONG).show();
+
+
+                                                                }
                                                             }
-                                                            //Toast.makeText(getApplicationContext(), String.valueOf(valueResult), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    }
+                                                    if (x == 0) {
+                                                        FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                                        String uid = curentUser.getUid();
+                                                        if (uid == driverId) {
+//                                                            Toast.makeText(getApplicationContext(), driverId, Toast.LENGTH_LONG).show();
+                                                            reference.child("Dast").child(idDust).child("status").setValue("pending");
+                                                            x = 1;
+                                                            Intent i = new Intent(HomeActivity.this, DustBinLocation.class);
+                                                            i.putExtra("Id", idDust);
+                                                            i.putExtra("longitude", lonDust);
+                                                            i.putExtra("latitude", latDust);
+
+
+                                                            startActivity(i);
+                                                            finish();
+                                                            locationManager.removeUpdates(locationListener);
+
                                                         }
                                                     }
                                                 }
-                                                FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
-                                                String uid = curentUser.getUid();
-                                                if (uid == driverId) {
-//                                                Toast.makeText(getApplicationContext(), driverId, Toast.LENGTH_LONG).show();
-                                                reference.child("Dustbin").child(idDust).child("status").setValue("pending");
 
-                                                Intent i = new Intent(HomeActivity.this, DustBinLocation.class);
-                                                i.putExtra("Id", idDust);
-                                                i.putExtra("longitude", lonDust);
-                                                i.putExtra("latitude", latDust);
-
-                                                startActivity(i);
-                                                finish();
-                                                locationManager.removeUpdates(locationListener);
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError
+                                                                                databaseError) {
 
                                                 }
+                                            });
 
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError
-                                                                            databaseError) {
-
-                                            }
-                                        });
-
+                                        }
                                     }
+
                                 }
+
 
                             }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+                }
 
             }
 
