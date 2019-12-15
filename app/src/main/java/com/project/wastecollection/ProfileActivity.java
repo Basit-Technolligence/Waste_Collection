@@ -95,10 +95,25 @@ public class ProfileActivity extends BaseActivity {
                 startActivity( i );
             }
         });
+
+        pupdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i = new Intent( ProfileActivity.this , HomeActivity.class );
+                startActivity( i );
+            }
+        });
     }
 
     @Override
     protected int getContentViewId() {
         return R.layout.activity_profile;
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this,HomeActivity.class));
+        finish();
     }
 }

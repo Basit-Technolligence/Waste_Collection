@@ -34,6 +34,7 @@
             android:value="@string/map_key" />
 
         <activity android:name=".HistoryActivity" />
+        <activity android:name=".DustBinLocation" />
         <activity
             android:name=".DrivingTimeActivity"
             android:parentActivityName=".HomeActivity" />

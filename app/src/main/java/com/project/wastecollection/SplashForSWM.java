@@ -16,8 +16,11 @@ public class SplashForSWM extends AppCompatActivity {
         setContentView( R.layout.activity_splash_for_swm );
 
         ImageView imageView = findViewById( R.id.imagelogo );
+//        ImageView imageView1 = findViewById( R.id.imagelogo1 );
         Animation animation = AnimationUtils.loadAnimation( getApplicationContext(),R.anim.fade );
+//        Animation animation1 = AnimationUtils.loadAnimation( getApplicationContext(),R.anim.fade1 );
         imageView.startAnimation( animation );
+//        imageView1.startAnimation( animation1 );
 
         Thread timer = new Thread(  ) {
             @Override

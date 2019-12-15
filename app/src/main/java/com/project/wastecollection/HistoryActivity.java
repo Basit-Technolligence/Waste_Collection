@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
@@ -32,15 +33,23 @@ public class HistoryActivity extends BaseActivity{
     String checkUser;
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this,HomeActivity.class));
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("History");
         //setContentView(R.layout.activity_history);
         recyclerView=(RecyclerView) findViewById(R.id.recyclerView);
          recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
-        final String uid="ali";//currentUser.getUid();
-        database.addValueEventListener(new ValueEventListener() {
+        final String uid=currentUser.getUid();
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds_history:dataSnapshot.getChildren())
@@ -56,6 +65,7 @@ public class HistoryActivity extends BaseActivity{
                 else{
                     //
                 }
+
                 recyclerView.setAdapter(new HistoryAdapter(dustbinName,date,location,time));
 
             }

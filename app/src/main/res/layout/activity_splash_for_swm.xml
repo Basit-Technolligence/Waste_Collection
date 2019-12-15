@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     android:background="@drawable/background"
     tools:context=".SplashForSWM">
     <ImageView
@@ -12,5 +13,12 @@
         android:layout_height="200sp"
         android:layout_centerInParent="true"
         android:src="@drawable/logo2"/>
+<!--    <ImageView-->
+<!--        android:id="@+id/imagelogo1"-->
+<!--        android:layout_width="200sp"-->
+<!--        android:layout_height="200sp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:src="@drawable/logo2"/>-->
 
 </RelativeLayout>

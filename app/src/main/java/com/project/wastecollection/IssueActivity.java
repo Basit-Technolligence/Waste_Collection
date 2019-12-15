@@ -3,6 +3,7 @@ package com.project.wastecollection;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -66,6 +67,7 @@ public class IssueActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
+        startActivity(new Intent(this,HomeActivity.class));
+        finish();
     }
 }

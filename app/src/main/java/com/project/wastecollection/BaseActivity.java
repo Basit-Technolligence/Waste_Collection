@@ -121,11 +121,23 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
             }
             case R.id.logout: {
-                Snackbar.make(drawerLayout, "Logout", Snackbar.LENGTH_LONG).show();
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                final String uid = currentUser.getUid();
+                if (uid != null)
+                    dref.child("Active").child(uid).setValue(null);
+
+                startActivity(new Intent(this,LoginActivity.class));
+                finish();
                 break;
 
             }
         }
         return false;
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this,HomeActivity.class));
+        finish();
     }
 }
