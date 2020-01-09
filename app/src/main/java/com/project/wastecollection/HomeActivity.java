@@ -127,6 +127,7 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
                 reference.child("Active").child(uid).child("latitude").setValue(location.getLatitude());
 
                 googleMap.addMarker(new MarkerOptions().position(latLng).title("Your location").icon(BitmapDescriptorFactory.fromResource(R.drawable.truckmarker)));
+
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18), 4000, null);
 
                 if (latLng != null) {
