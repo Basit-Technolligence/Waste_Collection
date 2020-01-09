@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -46,6 +47,7 @@ public class CompleteProfile extends AppCompatActivity {
     String check = "update";
     DatabaseReference ref;
     FirebaseStorage storage;
+    ProgressDialog pd;
     StorageReference storageReference ;
     private FirebaseAuth mAuth;
 
@@ -60,18 +62,21 @@ public class CompleteProfile extends AppCompatActivity {
         eAge=(EditText)findViewById(R.id.profage);
         vechileNo=(EditText)findViewById(R.id.vechileNo);
         eConfirm=(Button) findViewById(R.id.profCONFIRM);
+        pd=new ProgressDialog(this);
+        pd.setMessage("Logging In..... ");
 
 //        spinner=(Spinner) findViewById(R.id.dropdown);
 //        final String[] items=new String[]{"1","2","3","4","5","6","7","8"};
 //        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item,items);
 //        spinner.setAdapter(adapter);
 
-        Intent in =getIntent();
+//        Intent in =getIntent();
+
+
+        Intent in = getIntent();
+        final String update = in.getStringExtra( "update" );
         name = in.getStringExtra( "name" );
         eName.setText( String.valueOf(  name) );
-
-        Intent i = getIntent();
-        final String update = i.getStringExtra( "update" );
 
         pimage=(ImageView)findViewById(R.id.pimage);
         pimage.setOnClickListener(new View.OnClickListener() {
@@ -91,20 +96,22 @@ public class CompleteProfile extends AppCompatActivity {
         storageReference=storage.getReference();
         mAuth = FirebaseAuth.getInstance(  );
 
-        FirebaseUser currentuser = FirebaseAuth.getInstance().getCurrentUser();
-        final String id=currentuser.getUid();
+//        FirebaseUser currentuser = FirebaseAuth.getInstance().getCurrentUser();
+        final String id=name;
         eConfirm.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                pd.setMessage("Profile Data Saving....");
+                pd.show();
                 if (!eName.getText().toString().isEmpty() && !eMobile.getText().toString().isEmpty()&& !eAddress.getText().toString().isEmpty()&& !vechileNo.getText().toString().isEmpty()&& !eAge.getText().toString().isEmpty() && !filepath.getPath().isEmpty() )
                 {
+
                     final String push = FirebaseDatabase.getInstance().getReference().child("Packages").push().getKey();
                     StorageReference fileReference  = storageReference.child("images/"+ push);
                     fileReference.putFile(filepath)
                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    Toast.makeText(getApplicationContext(), "Uploaded", Toast.LENGTH_SHORT).show();
                                     if(filepath!=null) {
                                         profiledata profiledata = new profiledata();
                                         profiledata.setID(id);
@@ -120,14 +127,19 @@ public class CompleteProfile extends AppCompatActivity {
 
                                         ref.child(id)
                                                 .setValue(profiledata);
+                                        pd.dismiss();
                                         Toast.makeText(CompleteProfile.this,"profile successfully saved..",Toast.LENGTH_LONG).show();
-                                       if(update.equals( check )) {
-                                           Intent i = new Intent( CompleteProfile.this, ProfileActivity.class );
-                                           startActivity( i );
+                                       if(check.equals( update)) {
+                                           Intent in = new Intent( CompleteProfile.this, ProfileActivity.class );
+                                           in.putExtra( "name", String.valueOf( name ) );
+                                           startActivity(in);
+                                           finish();
                                        }
                                        else {
-                                           Intent i = new Intent( CompleteProfile.this, LoginActivity.class );
-                                           startActivity( i );
+                                           Intent in = new Intent( CompleteProfile.this, LoginActivity.class );
+                                           in.putExtra( "name", String.valueOf( name ) );
+                                           startActivity(in);
+                                           finish();
 
                                        }
                                     }
@@ -159,7 +171,12 @@ public class CompleteProfile extends AppCompatActivity {
                         eAddress.setText(profiledata.getADDRESS());
                         eAge.setText(profiledata.getAge());
                         vechileNo.setText(profiledata.getVECHILENO());
-                        Picasso.get().load(profiledata.getIMAGEURL()).into(pimage);
+                        if(profiledata.getIMAGEURL().equals( " " )) {
+                 //           Picasso.get().load( profiledata.getIMAGEURL() ).into( pimage );
+                        }
+                        else {
+                            Picasso.get().load( profiledata.getIMAGEURL() ).into( pimage );
+                        }
                     }
                 }
             }
@@ -192,7 +209,9 @@ public class CompleteProfile extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(this,HomeActivity.class));
+        Intent in = new Intent( CompleteProfile.this, HomeActivity.class );
+        in.putExtra( "name", String.valueOf( name ) );
+        startActivity(in);
         finish();
     }
 
