@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,8 +32,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -45,10 +49,11 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
     String dustid, latitude, longitude;
     LocationManager locationManager;
+    String userId;
     FusedLocationProviderClient fusedLocationProviderClient;
     Double lat2 = 0.0, lon2 = 0.0;
     DatabaseReference dref = FirebaseDatabase.getInstance().getReference();
-    String city;
+    String city,name,userName;
     Button finish;
 
     @Override
@@ -58,10 +63,14 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
         SupportMapFragment supportMapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragmentMap);
         supportMapFragment.getMapAsync(DustBinLocation.this);
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = currentUser.getUid();
+//        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        Intent in =getIntent();
+        name = in.getStringExtra( "name" );
+        userName = name;
+        final String uid =userName ;
         if (uid != null)
             reference.child("Active").child(uid).setValue(null);
+        reference.child( "Working" ).child( uid ).child( "id" ).setValue( uid );
         Intent i = getIntent();
         dustid = i.getStringExtra("Id");
         latitude = i.getStringExtra("latitude");
@@ -77,8 +86,10 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 reference.child("Dast").child(dustid).child("status").setValue("full");
-
-                startActivity(new Intent(DustBinLocation.this,HomeActivity.class));
+              Intent i =  new Intent(DustBinLocation.this,HomeActivity.class);
+                i.putExtra( "name",uid );
+                startActivity(i);
+                finish();
             }
         }).show();
 
@@ -94,7 +105,14 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
     protected void onResume() {
         super.onResume();
         getLocation();
+        userId=userName;
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+         userId=userName;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -138,7 +156,7 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
         double c = 2 * Math.asin(Math.sqrt(a));
         double valueResult = Radius * c;
         final double km = valueResult / 1;
-        DecimalFormat newFormat = new DecimalFormat("####");
+        final DecimalFormat newFormat = new DecimalFormat("####");
         int kmInDec = Integer.valueOf(newFormat.format(km));
         double meter = valueResult % 1000;
         int meterInDec = Integer.valueOf(newFormat.format(meter));
@@ -151,12 +169,27 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void onClick(View v) {
                 //Toast.makeText(getApplicationContext(), String.valueOf(km), Toast.LENGTH_LONG).show();
-                FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
-                final String uid = curentUser.getUid();
+             //   FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
+                final String uid =userId;// curentUser.getUid();
+                dref.child( "Employee_Profile" ).child( uid ).addListenerForSingleValueEvent( new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                       name = dataSnapshot.child( "name" ).getValue().toString();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                } );
+
                 final String push = FirebaseDatabase.getInstance().getReference().child("History").push().getKey();
                 dref.child("History").child(push).child("id").setValue(push);
                 dref.child("History").child(push).child("user").setValue(uid);
+                dref.child("History").child(push).child("name").setValue(name);
                 dref.child("History").child(push).child("dustbin").setValue(dustid);
+                dref.child("Notify/History").child(push).child("id").setValue(push);
+
                 Geocoder geoCoder = new Geocoder(DustBinLocation.this, Locale.getDefault());
                 StringBuilder builder = new StringBuilder();
                 try {
@@ -189,11 +222,15 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
                 dref.child("History").child(push).child("time").setValue(currentTime);
                 dref.child("Dast").child(dustid).child("status").setValue("empty");
 
-                String uId = curentUser.getUid();
+                String uId = userId;//curentUser.getUid();
                 reference.child("Active").child(uid).child("id").setValue(uId);
                 reference.child("Active").child(uid).child("longitude").setValue(lon2);
                 reference.child("Active").child(uid).child("latitude").setValue(lat2);
+
+                reference.child( "Working" ).child( uid ).setValue( null );
+
                 Intent i = new Intent(DustBinLocation.this , HomeActivity.class);
+                i.putExtra( "name",userId );
                 finish();
                 startActivity(i);
             }

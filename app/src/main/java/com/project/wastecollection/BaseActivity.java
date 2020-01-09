@@ -31,9 +31,11 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     DrawerLayout drawerLayout;
     ImageView imageView;
     TextView name,gmail;
-    String eName,eImage;
+    String eName,eImage,userName;
+   public String abc;
     ActionBarDrawerToggle drawerToggle;
     DatabaseReference dref= FirebaseDatabase.getInstance().getReference();
+    public int logout=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,12 +45,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawarLayout);
 
-
+        Intent in =getIntent();
+        userName = in.getStringExtra( "name" );
         //adding drawar button
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
         //navbar item click
+
+
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -57,16 +63,22 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         imageView = (ImageView) headerview.findViewById(R.id.profile_image);
         name = (TextView)headerview.findViewById( R.id.ename );
 
-        FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
-        final String uid=currentUser.getUid();
+//        FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
+        final String uid=userName;
 
-        dref.child( "Employee_Profile" ).child( uid ).addValueEventListener( new ValueEventListener() {
+            dref.child( "Employee_Profile" ).child( uid ).addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     eName = dataSnapshot.child( "name" ).getValue().toString();
                     name.setText(String.valueOf( eName ));
-                    Picasso.get().load(dataSnapshot.child( "imageurl" ).getValue().toString()).into(imageView);
+                    if(dataSnapshot.child( "imageurl" ).getValue().toString().equals( " " )) {
+//                        Picasso.get().load( dataSnapshot.child( "imageurl" ).getValue().toString() ).into( imageView );
+                    }
+                    else {
+                        Picasso.get().load( dataSnapshot.child( "imageurl" ).getValue().toString() ).into( imageView );
+
+                    }
                 }
 
             }
@@ -98,34 +110,44 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.home: {
-                startActivity(new Intent(this,HomeActivity.class));
+
+                Intent in = new Intent(this,HomeActivity.class);
+                in.putExtra( "name", String.valueOf( userName ) );
+                startActivity(in);
                 finish();
                 break;
             }
             case R.id.profile: {
-                startActivity(new Intent(this,ProfileActivity.class));
+                Intent in = new Intent(this,ProfileActivity.class);
+                in.putExtra( "name", String.valueOf( userName ) );
+                startActivity(in);
                 finish();
 
                 break;
             }
             case R.id.history: {
-                startActivity(new Intent(this,HistoryActivity.class));
+                Intent in = new Intent(this,HistoryActivity.class);
+                in.putExtra( "name", String.valueOf( userName ) );
+                startActivity(in);
                 finish();
                 break;
 
             }
             case R.id.report: {
-                startActivity(new Intent(this,IssueActivity.class));
+                Intent in = new Intent(this,IssueActivity.class);
+                in.putExtra( "name", String.valueOf( userName ) );
+                startActivity(in);
                 finish();
                 break;
 
             }
             case R.id.logout: {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                final String uid = currentUser.getUid();
+                //FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                final String uid = userName;//currentUser.getUid();
                 if (uid != null)
                     dref.child("Active").child(uid).setValue(null);
-
+                dref.child( "Offline" ).child( uid ).child( "id" ).setValue( uid );
+                logout++;
                 startActivity(new Intent(this,LoginActivity.class));
                 finish();
                 break;
@@ -137,7 +159,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(this,HomeActivity.class));
+        Intent in = new Intent( BaseActivity.this, HomeActivity.class );
+        in.putExtra( "name", String.valueOf( userName ) );
+        startActivity(in);
         finish();
     }
 }

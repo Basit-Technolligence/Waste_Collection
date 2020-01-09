@@ -30,14 +30,8 @@ public class HistoryActivity extends BaseActivity{
     ArrayList<String> latitude=new ArrayList<>();
     ArrayList<String> longitude=new ArrayList<>();
     DatabaseReference database=FirebaseDatabase.getInstance().getReference("History");
-    String checkUser;
+    String checkUser,userName;
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(this,HomeActivity.class));
-        finish();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +41,12 @@ public class HistoryActivity extends BaseActivity{
         recyclerView=(RecyclerView) findViewById(R.id.recyclerView);
          recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
-        final String uid=currentUser.getUid();
+        Intent in =getIntent();
+        userName = in.getStringExtra( "name" );
+
+
+//        FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
+        final String uid=userName;
         database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -81,7 +79,17 @@ public class HistoryActivity extends BaseActivity{
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent in = new Intent( HistoryActivity.this, HomeActivity.class );
+        in.putExtra( "name", String.valueOf( userName ) );
+        startActivity(in);
+        finish();
+    }
+
+    @Override
     protected int getContentViewId() {
         return R.layout.activity_history;
     }
+
 }

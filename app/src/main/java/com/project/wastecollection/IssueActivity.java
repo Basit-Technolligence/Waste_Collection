@@ -65,8 +65,9 @@ public class IssueActivity extends BaseActivity {
                 dref.child("Issues").child(push).child("latitude").setValue(latitude);
                 dref.child("Issues").child(push).child("driverid").setValue(uid);
                 dref.child("Issues").child(push).child("issue").setValue("I got an accident.");
+                dref.child("Notify/Notification").child(push).child("id").setValue(push);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IssueActivity.this);
                 alertDialogBuilder.setTitle("Issue Submitted").setMessage("We are sending help for you.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -85,13 +86,15 @@ public class IssueActivity extends BaseActivity {
                 dref.child("Issues").child(push).child("latitude").setValue(latitude);
                 dref.child("Issues").child(push).child("driverid").setValue(uid);
                 dref.child("Issues").child(push).child("issue").setValue("I have a problem with my vehicle.");
+                dref.child("Notify/Notification").child(push).child("id").setValue(push);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IssueActivity.this);
                 alertDialogBuilder.setTitle("Issue Submitted").setMessage("We are sending help for you.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 }).show();
+
 
             }
         } );
@@ -104,8 +107,9 @@ public class IssueActivity extends BaseActivity {
                 dref.child("Issues").child(push).child("latitude").setValue(latitude);
                 dref.child("Issues").child(push).child("driverid").setValue(uid);
                 dref.child("Issues").child(push).child("issue").setValue("I found an item.");
+                dref.child("Notify/Notification").child(push).child("id").setValue(push);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IssueActivity.this);
                 alertDialogBuilder.setTitle("Issue Submitted").setMessage("We have recieved your query we will get you soon.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -124,8 +128,9 @@ public class IssueActivity extends BaseActivity {
                 dref.child("Issues").child(push).child("latitude").setValue(latitude);
                 dref.child("Issues").child(push).child("driverid").setValue(uid);
                 dref.child("Issues").child(push).child("issue").setValue("I have an issue with my trip.");
+                dref.child("Notify/Notification").child(push).child("id").setValue(push);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IssueActivity.this);
                 alertDialogBuilder.setTitle("Issue Submitted").setMessage("We have recieved your query we will get you soon.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -143,8 +148,9 @@ public class IssueActivity extends BaseActivity {
                 dref.child("Issues").child(push).child("latitude").setValue(latitude);
                 dref.child("Issues").child(push).child("driverid").setValue(uid);
                 dref.child("Issues").child(push).child("issue").setValue("I have an issue with my app.");
+                dref.child("Notify/Notification").child(push).child("id").setValue(push);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(IssueActivity.this);
                 alertDialogBuilder.setTitle("Issue Submitted").setMessage("We have recieved your query we will get you soon.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

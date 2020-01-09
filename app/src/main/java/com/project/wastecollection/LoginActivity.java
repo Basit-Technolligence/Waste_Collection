@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView signup,mRecoverPasswordtv;
     EditText emailValidate, password;
     ProgressDialog pd;
+    String name,UserEmail,UserPassword,userId;
     private FirebaseAuth mAuth;
 
     DatabaseReference dref= FirebaseDatabase.getInstance().getReference();
@@ -52,6 +53,12 @@ public class LoginActivity extends AppCompatActivity {
         pd=new ProgressDialog(this);
         pd.setMessage("Logging In..... ");
         login= (Button) findViewById(R.id.btnlogin);
+
+        Intent in =getIntent();
+        name = in.getStringExtra( "name" );
+
+
+
 
         emailValidate = (EditText)findViewById(R.id.loginuname);
 
@@ -98,36 +105,45 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loginuser(String EMAIL, String PASSWORD) {
+    private void loginuser(final String EMAIL, final String PASSWORD) {
         pd.setMessage("Logging In....");
         pd.show();
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.signInWithEmailAndPassword(EMAIL, PASSWORD)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-
+        dref.child( "Users" ).addValueEventListener( new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds_user:dataSnapshot.getChildren())
+                    if(ds_user.exists()) {
+                        UserEmail = ds_user.child( "Email" ).getValue().toString();
+                        userId = ds_user.getKey();
+                        UserPassword = ds_user.child( "Password" ).getValue().toString();
+                        if (UserEmail.equals( EMAIL )&& UserPassword.equals( PASSWORD )) {
+                            if(name==null)
+                                name= userId;
                             pd.dismiss();
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            startActivity(new Intent(LoginActivity.this,HomeActivity.class));
-                            finish();
+//                            FirebaseUser user = mAuth.getCurrentUser();
+                            Intent in = new Intent( LoginActivity.this, HomeActivity.class );
+                            in.putExtra( "name", String.valueOf( name ) );
 
-                        } else {
-                            pd.dismiss();
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            startActivity( in );
+                            finish();
                         }
+
+                        else {
+                            pd.dismiss();
+
+
+                        }
+
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+            }
+
             @Override
-            public void onFailure(@NonNull Exception e) {
-                pd.dismiss();
-                Toast.makeText(LoginActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
 
             }
-        });
+        } );
     }
 
     private void showRecoverPasswordDialog() {

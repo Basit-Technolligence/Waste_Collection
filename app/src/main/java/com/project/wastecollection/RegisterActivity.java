@@ -79,6 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i= new Intent(RegisterActivity.this,MainActivity.class);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -89,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(RegisterActivity.this,LoginActivity.class);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -108,16 +110,18 @@ public class RegisterActivity extends AppCompatActivity {
                             //FirebaseUser user = mAuth.getCurrentUser();
 
                             String Email=email;
+                            String Password=password;
 //                            String Password = password;
-                            String uid=FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            String uid=eName;
                             FirebaseDatabase database=FirebaseDatabase.getInstance();
 
 
                             DatabaseReference reference=database.getReference("Users");
 
                             reference.child(uid).child( "Email" ).setValue(Email);
+                            reference.child(uid).child( "Password" ).setValue(password);
 //                            reference.child(uid).child( "Password" ).setValue(Password);
-                            reference.child(uid).child( "Id" ).setValue(uid);
+//                            reference.child(uid).child( "Id" ).setValue(uid);
                             Intent in = new Intent( RegisterActivity.this, CompleteProfile.class );
                             in.putExtra( "name", String.valueOf( eName ) );
 

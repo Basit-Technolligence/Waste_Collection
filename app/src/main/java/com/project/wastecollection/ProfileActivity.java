@@ -26,13 +26,15 @@ public class ProfileActivity extends BaseActivity {
     TextView eName,eMobile,eAddress,eAge,vechileNo;
     Button pupdate , pback;
     String update="update";
+    String currentuser;
     ImageView eImage;
-    String name;
+//    String userName;
     private Uri filepath;
     FirebaseDatabase database;
     DatabaseReference ref;
     FirebaseStorage storage;
     StorageReference storageReference ;
+
 
 
     @Override
@@ -51,7 +53,9 @@ public class ProfileActivity extends BaseActivity {
         vechileNo = (TextView)findViewById(R.id.txtVechileNo);
 
         pupdate=(Button) findViewById(R.id.profCONFIRM);
-        pback=(Button) findViewById(R.id.back);
+
+        Intent in =getIntent();
+        currentuser = in.getStringExtra( "name" );
 
 
 
@@ -60,7 +64,7 @@ public class ProfileActivity extends BaseActivity {
         storage=FirebaseStorage.getInstance();
         storageReference=storage.getReference();
 
-        final String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
 
         ref.child( currentuser ).addValueEventListener( new ValueEventListener() {
@@ -74,7 +78,12 @@ public class ProfileActivity extends BaseActivity {
                         eAddress.setText(profiledata.getADDRESS());
                         eAge.setText(profiledata.getAge());
                         vechileNo.setText(profiledata.getVECHILENO());
-                        Picasso.get().load(profiledata.getIMAGEURL()).into(eImage);
+                        if(profiledata.getIMAGEURL().equals( " " )) {
+
+                        }
+                        else {
+                            Picasso.get().load( profiledata.getIMAGEURL() ).into( eImage );
+                        }
 
 
                     }
@@ -90,20 +99,14 @@ public class ProfileActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                Intent i = new Intent( ProfileActivity.this , CompleteProfile.class );
-                i.putExtra( "update", String.valueOf( update ) );
-                startActivity( i );
+                Intent in = new Intent( ProfileActivity.this , CompleteProfile.class );
+                in.putExtra( "update", String.valueOf( update ) );
+                in.putExtra( "name", String.valueOf( currentuser ) );
+                startActivity( in );
+                finish();
             }
         });
 
-        pupdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent i = new Intent( ProfileActivity.this , HomeActivity.class );
-                startActivity( i );
-            }
-        });
     }
 
     @Override
@@ -113,7 +116,9 @@ public class ProfileActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(this,HomeActivity.class));
+        Intent in = new Intent( ProfileActivity.this, HomeActivity.class );
+        in.putExtra( "name", String.valueOf( currentuser ) );
+        startActivity(in);
         finish();
     }
 }

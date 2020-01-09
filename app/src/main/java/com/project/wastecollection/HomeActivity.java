@@ -60,13 +60,18 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
     Double distance1 = 1000000000000000.0;
     String driverId, lonDust, latDust, idDust, lon, lat, id;
     Integer x = 0;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
         //setContentView(R.layout.activity_home);
-       // drawerLayout = (DrawerLayout) findViewById(R.id.drawarLayout);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // drawerLayout = (DrawerLayout) findViewById(R.id.drawarLayout);
+        locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+        Intent in = getIntent();
+        username = in.getStringExtra( "name" );
+
 //
 //        //adding drawar button
 //        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -85,8 +90,8 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
 
         //opening map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)
-                getSupportFragmentManager().findFragmentById(R.id.fragmentMap);
-        supportMapFragment.getMapAsync(HomeActivity.this);
+                getSupportFragmentManager().findFragmentById( R.id.fragmentMap );
+        supportMapFragment.getMapAsync( HomeActivity.this );
 
     }
 
@@ -101,83 +106,85 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
         recreate();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService( LOCATION_SERVICE );
 
 
         locationListener = new LocationListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
+            @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             public void onLocationChanged(final Location location) {
                 googleMap.clear();
-
-
 //no
                 //Toast.makeText(HomeActivity.this, "location:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
                 //showing on map
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
-                String uid = curentUser.getUid();
-                reference.child("Active").child(uid).child("id").setValue(uid);
-                reference.child("Active").child(uid).child("longitude").setValue(location.getLongitude());
-                reference.child("Active").child(uid).child("latitude").setValue(location.getLatitude());
+                LatLng latLng = new LatLng( location.getLatitude(), location.getLongitude() );
 
-                googleMap.addMarker(new MarkerOptions().position(latLng).title("Your location").icon(BitmapDescriptorFactory.fromResource(R.drawable.truckmarker)));
+//                FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (logout == 0) {
+                    String uid = username;
+                    reference.child( "Active" ).child( uid ).child( "id" ).setValue( uid );
+                    reference.child( "Active" ).child( uid ).child( "longitude" ).setValue( location.getLongitude() );
+                    reference.child( "Active" ).child( uid ).child( "latitude" ).setValue( location.getLatitude() );
+                    reference.child( "Offline" ).child( username ).setValue( null );
 
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18), 4000, null);
+                }
+
+                googleMap.addMarker( new MarkerOptions().position( latLng ).title( "Your location" ).icon( BitmapDescriptorFactory.fromResource( R.drawable.truckmarker ) ) );
+                googleMap.animateCamera( CameraUpdateFactory.newLatLngZoom( latLng, 18 ), 4000, null );
 
                 if (latLng != null) {
-                    reference.child("Dast").addValueEventListener(new ValueEventListener() {
+                    reference.child( "Dast" ).addValueEventListener( new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 for (DataSnapshot dustbin : dataSnapshot.getChildren()) {
                                     if (dataSnapshot.exists()) {
-                                        if (dustbin.child("status").getValue().equals("full")) {
-                                            lonDust = dustbin.child("longitude").getValue().toString();
-                                            latDust = dustbin.child("latitude").getValue().toString();
-                                            idDust = dustbin.child("id").getValue().toString();
+                                        if (dustbin.child( "status" ).getValue().equals( "full" )) {
+                                            lonDust = dustbin.child( "longitude" ).getValue().toString();
+                                            latDust = dustbin.child( "latitude" ).getValue().toString();
+                                            idDust = dustbin.child( "id" ).getValue().toString();
 //                                        googleMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latDust), Double.parseDouble(lonDust))).title("Dustbin"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
 
-                                            reference.child("Active").addValueEventListener(new ValueEventListener() {
-                                                @RequiresApi(api = Build.VERSION_CODES.M)
+                                            reference.child( "Active" ).addValueEventListener( new ValueEventListener() {
+                                                @RequiresApi(api = Build.VERSION_CODES.P)
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                     if (dataSnapshot.exists()) {
                                                         for (DataSnapshot user : dataSnapshot.getChildren()) {
                                                             if (x == 0) {
-                                                                if (user.child("longitude").getValue().toString() != null) {
-                                                                    lon = user.child("longitude").getValue().toString();
+                                                                if (user.child( "longitude" ).getValue().toString() != null) {
+                                                                    lon = user.child( "longitude" ).getValue().toString();
 
-                                                                    lat = user.child("latitude").getValue().toString();
-                                                                    id = user.child("id").getValue().toString();
+                                                                    lat = user.child( "latitude" ).getValue().toString();
+                                                                    id = user.child( "id" ).getValue().toString();
 
                                                                     int Radius = 6371;// radius of earth in Km
-                                                                    double latitude = Double.parseDouble(lonDust);
-                                                                    double longitude = Double.parseDouble(latDust);
-                                                                    double lat2 = Double.parseDouble(lat);
-                                                                    double lon2 = Double.parseDouble(lon);
+                                                                    double latitude = Double.parseDouble( lonDust );
+                                                                    double longitude = Double.parseDouble( latDust );
+                                                                    double lat2 = Double.parseDouble( lat );
+                                                                    double lon2 = Double.parseDouble( lon );
                                                                     // googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lon2)).title("Destination"));//.icon(BitmapDescriptorFactory.fromResource(R.drawable.dp)));
 
-                                                                    double dLat = Math.toRadians(lat2 - latitude);
-                                                                    double dLon = Math.toRadians(lon2 - longitude);
-                                                                    double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                                                                            + Math.cos(Math.toRadians(latitude))
-                                                                            * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                                                                            * Math.sin(dLon / 2);
-                                                                    double c = 2 * Math.asin(Math.sqrt(a));
+                                                                    double dLat = Math.toRadians( lat2 - latitude );
+                                                                    double dLon = Math.toRadians( lon2 - longitude );
+                                                                    double a = Math.sin( dLat / 2 ) * Math.sin( dLat / 2 )
+                                                                            + Math.cos( Math.toRadians( latitude ) )
+                                                                            * Math.cos( Math.toRadians( lat2 ) ) * Math.sin( dLon / 2 )
+                                                                            * Math.sin( dLon / 2 );
+                                                                    double c = 2 * Math.asin( Math.sqrt( a ) );
                                                                     double valueResult = Radius * c;
                                                                     double km = valueResult / 1;
-                                                                    DecimalFormat newFormat = new DecimalFormat("####");
-                                                                    int kmInDec = Integer.valueOf(newFormat.format(km));
+                                                                    DecimalFormat newFormat = new DecimalFormat( "####" );
+                                                                    int kmInDec = Integer.valueOf( newFormat.format( km ) );
                                                                     double meter = valueResult % 1000;
-                                                                    int meterInDec = Integer.valueOf(newFormat.format(meter));
-                                                                    Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
-                                                                            + " Meter   " + meterInDec);
+                                                                    int meterInDec = Integer.valueOf( newFormat.format( meter ) );
+                                                                    Log.i( "Radius Value", "" + valueResult + "   KM  " + kmInDec
+                                                                            + " Meter   " + meterInDec );
 
                                                                     if (distance1 >= km) {
                                                                         distance1 = km;
@@ -192,21 +199,22 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
                                                         }
                                                     }
                                                     if (x == 0) {
-                                                        FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
-                                                        String uid = curentUser.getUid();
-                                                        if (uid.equals( driverId)) {
+//                                                        FirebaseUser curentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                                        String uid = username;
+                                                        if (uid.equals( driverId )) {
 //                                                            Toast.makeText(getApplicationContext(), driverId, Toast.LENGTH_LONG).show();
-                                                            reference.child("Dast").child(idDust).child("status").setValue("pending");
+                                                            reference.child( "Dast" ).child( idDust ).child( "status" ).setValue( "pending" );
                                                             x = 1;
-                                                            Intent i = new Intent(HomeActivity.this, DustBinLocation.class);
-                                                            i.putExtra("Id", idDust);
-                                                            i.putExtra("longitude", lonDust);
-                                                            i.putExtra("latitude", latDust);
+                                                            Intent i = new Intent( HomeActivity.this, DustBinLocation.class );
+                                                            i.putExtra( "Id", idDust );
+                                                            i.putExtra( "longitude", lonDust );
+                                                            i.putExtra( "latitude", latDust );
+                                                            i.putExtra( "name", userName );
 
 
-                                                            startActivity(i);
+                                                            startActivity( i );
                                                             finish();
-                                                            locationManager.removeUpdates(locationListener);
+                                                            locationManager.removeUpdates( locationListener );
 
                                                         }
                                                     }
@@ -217,7 +225,7 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
                                                                                 databaseError) {
 
                                                 }
-                                            });
+                                            } );
 
                                         }
                                     }
@@ -232,7 +240,7 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
                         }
-                    });
+                    } );
                 }
 
             }
@@ -249,19 +257,19 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
 
             @Override
             public void onProviderDisabled(String provider) {
-                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(i);
+                Intent i = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS );
+                startActivity( i );
+                finish();
 
             }
         }
 
         ;
-        if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(HomeActivity.this, new String[]
-                    {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        }
-
-        locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
+        if (ActivityCompat.checkSelfPermission( HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission( HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions( HomeActivity.this, new String[]
+                    {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION );
+        } else
+            locationManager.requestLocationUpdates( "gps", 5000, 0, locationListener );
 
 
     }
@@ -273,7 +281,19 @@ public class HomeActivity extends BaseActivity implements OnMapReadyCallback {
 
     }
 
-
-
-
+    @Override
+    public void onBackPressed() {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( HomeActivity.this );
+        alertDialogBuilder.setTitle( "Logout" ).setMessage( "Are you sure to exit?" )
+                .setNegativeButton( "No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                } ).setPositiveButton( "Exit", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        } ).show();
+    }
 }
