@@ -149,6 +149,8 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         });
+        ///
+        ///
     }
 }
 
