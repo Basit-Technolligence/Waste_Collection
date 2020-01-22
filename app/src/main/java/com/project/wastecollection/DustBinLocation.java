@@ -162,7 +162,7 @@ public class DustBinLocation extends AppCompatActivity implements OnMapReadyCall
         int meterInDec = Integer.valueOf(newFormat.format(meter));
         Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
                 + " Meter   " + meterInDec);
-        if (km <= 0.05) {
+        if (km <= 0.5) {
             finish.setVisibility(View.VISIBLE);
         }
         finish.setOnClickListener(new View.OnClickListener() {

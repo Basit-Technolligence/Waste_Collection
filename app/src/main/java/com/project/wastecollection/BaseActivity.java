@@ -144,14 +144,15 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
             case R.id.logout: {
                 //FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 final String uid = userName;//currentUser.getUid();
-                if (uid != null)
+                if (uid != null) {
                     dref.child("Active").child(uid).setValue(null);
-                dref.child( "Offline" ).child( uid ).child( "id" ).setValue( uid );
-                logout++;
-                startActivity(new Intent(this,LoginActivity.class));
-                finish();
-                break;
+                    dref.child("Offline").child(uid).child("id").setValue(uid);
+                    logout++;
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                    break;
 
+                }
             }
         }
         return false;

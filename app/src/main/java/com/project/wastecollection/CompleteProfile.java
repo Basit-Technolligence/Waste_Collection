@@ -76,7 +76,7 @@ public class CompleteProfile extends AppCompatActivity {
         Intent in = getIntent();
         final String update = in.getStringExtra( "update" );
         name = in.getStringExtra( "name" );
-        eName.setText( String.valueOf(  name) );
+//        eName.setText( String.valueOf(  " ") );
 
         pimage=(ImageView)findViewById(R.id.pimage);
         pimage.setOnClickListener(new View.OnClickListener() {
